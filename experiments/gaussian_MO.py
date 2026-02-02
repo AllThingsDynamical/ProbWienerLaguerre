@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 
-d = 2
+d = 3
 filename = f"data/gaussian_{d}.npz"
 train_loader, test_loader = load_datasets(filename)
 
@@ -33,11 +33,11 @@ print("y:", y.shape, y.dtype, y.device)
 # Train model
 d_in = d
 d_out = 1
-K = 100
-S = 1000
-model = GMBarron(d_in, K, S, d_out,"gelu")
+K = 1000
+S = 500
+model = GMBarron(d_in, K, S, d_out,"tanh")
 opt = torch.optim.Adam(model.parameters(),lr=1e-3)
-epochs = 200
+epochs = 1000
 
 train_mse(model, train_loader, opt, epochs)
 
@@ -45,22 +45,14 @@ batch = next(iter(test_loader))
 x, y = batch
 pred_m, pred_v = estimate_GM_model(model, x, 2000)
 
-x_plot = x[:,0]
-y_plot = x[:,1]
+y_vis = y.detach().numpy().reshape(-1)
+ypred_vis = pred_m.detach().numpy().reshape(-1)
 
-c_plot = y
-v_plot = pred_m
+plt.scatter(y_vis, ypred_vis, alpha=0.1)
+plt.plot(y_vis, y_vis, '--')
+plt.xlabel("y (true)")
+plt.ylabel("y_pred")
+plt.axis("equal")
+plt.savefig("experiments/MO.png")
 
-
-fig, axes = plt.subplots(1, 2, figsize=(10, 4), sharex=True, sharey=True)
-
-sc1 = axes[0].scatter(x_plot, y_plot, c=c_plot, cmap="viridis")
-axes[0].set_title("Actual")
-plt.colorbar(sc1, ax=axes[0])
-
-sc2 = axes[1].scatter(x_plot, y_plot, c=v_plot, cmap="viridis")
-axes[1].set_title("Estimated")
-plt.colorbar(sc2, ax=axes[1])
-
-plt.tight_layout()
-plt.show()
+print(pred_m)
