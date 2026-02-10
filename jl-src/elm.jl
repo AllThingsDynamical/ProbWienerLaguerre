@@ -105,7 +105,7 @@ function bayesian_elm_estimator(X::Matrix{T}, Y::Matrix{T},
 end
 
 
-begin
+if TEST
     d::Int = 10
     n::Int = 3
     M::Int = 10_00
@@ -119,7 +119,7 @@ begin
     scatter!(Y[:], y_pred[:], ms=0.1)
 end
 
-begin
+if TEST
     estimator = bayesian_elm_estimator(X, Y, 1200)
     mu_y_pred, var_y_pred = estimator(X)
     mu_y_pred

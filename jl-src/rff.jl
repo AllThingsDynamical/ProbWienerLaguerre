@@ -96,7 +96,7 @@ function bayesian_rff_estimator(X::Matrix{T}, Y::Matrix{T},
     return estimator
 end
 
-begin
+if TEST
     d::Int = 10
     n::Int = 3
     M::Int = 10_00
@@ -104,7 +104,7 @@ begin
     Y = randn(n, M)
 end
 
-begin
+if TEST
     estimator = rff_estimator(X, Y, 1200)
     y_pred = estimator(X)
     Y
@@ -112,7 +112,7 @@ begin
     scatter!(Y[:], y_pred[:], ms=0.1)
 end
 
-begin
+if TEST
     estimator = bayesian_rff_estimator(X, Y, 1200)
     mu_y_pred, var_y_pred = estimator(X)
     mu_y_pred

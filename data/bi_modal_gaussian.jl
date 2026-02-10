@@ -42,9 +42,9 @@ ylabel!(s) = ylabel!(L"$s$")
 using LinearAlgebra
 using QuasiMonteCarlo
 
-function generate_gaussian_data(d::Int, nsamples::Int=10_000)
-    center_one = 30*ones(d)
-    center_two = -30*ones(d)
+function generate_gaussian_data(d::Int, nsamples::Int=20_00)
+    center_one = 15*ones(d)
+    center_two = -15*ones(d)
     center_three = zeros(d)
     sd = 20
 
@@ -52,14 +52,14 @@ function generate_gaussian_data(d::Int, nsamples::Int=10_000)
         exp(-0.5*(1/sd^2)*norm(x-y)^2)
     end
 
-    lower_limits = -70*ones(d)
-    upper_limits = 70*ones(d)
+    lower_limits = -30*ones(d)
+    upper_limits = 30*ones(d)
     samples = QuasiMonteCarlo.sample(nsamples, lower_limits, upper_limits, QuasiMonteCarlo.LatinHypercubeSample())
     X = samples
 
     Y = zeros(1, nsamples)
     for i=1:nsamples
-        Y[1,i] = gaussian(X[:,i], center_one) + gaussian(X[:,i], center_two)+ gaussian(X[:,i], center_three)
+        Y[1,i] = gaussian(X[:,i], center_one)  + gaussian(X[:,i], center_two)  + gaussian(X[:,i], center_three) 
     end
 
     return X, Y
@@ -82,7 +82,7 @@ function train_test_split(
     M_train = floor(Int, frac_train * M)
     train_idx = idx[1:M_train]
     
-    X_test, Y_test = generate_gaussian_data(d, 20_000)
+    X_test, Y_test = generate_gaussian_data(d, 3000)
 
     return (X[:, train_idx], Y[:, train_idx]),
            (X_test,  Y_test)
@@ -114,7 +114,7 @@ begin # Visualize data
 end
 
 begin # Generate data
-    dimensions = [2,3,5,10,20]
+    dimensions = [1,2,3,4,5]
     for d in dimensions
         X, Y = generate_gaussian_data(d)
         train, test = train_test_split(X, Y)
