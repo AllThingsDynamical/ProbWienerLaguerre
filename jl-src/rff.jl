@@ -5,12 +5,6 @@ using Plots
 that approximates the Gram matrix of a Gaussian process or kernel function using a squared exponential covariance function.
 ```
 
-d::Int = 10
-n::Int = 3
-M::Int = 10_00
-X = randn(d, M)
-Y = randn(n, M)
-
 function sample_rff_weights(params::Tuple, d::Int)
     num_features = params[1]
     
@@ -22,7 +16,7 @@ function sample_rff_weights(params::Tuple, d::Int)
     return W, b
 end
 
-function feature_matrix(X::Matrix{T}, params::Tuple) where {T}
+function rff_feature_matrix(X::Matrix{T}, params::Tuple) where {T}
     d, M = size(X)
     W, b = sample_rff_weights(params, d)
     K = params[1]
@@ -40,33 +34,43 @@ function tikhonov_regularization(Φ::Matrix{T}, Y::Matrix{T}, params::Tuple) whe
     return a
 end
 
-function construct_estimator(a::Matrix{T}, W::Matrix{T}, b::Any) where {T}
+function construct_rff_estimator(a::Matrix{T}, W::Matrix{T}, b::Any) where {T}
     d, M = size(X)
     k, n = size(a)
     ψ = x -> cos.(W'*x + b)
     
-    estimator = function(x::Matrix{T}) where {T}
+   estimator = function(x::Matrix{T}) where {T}
         d, m = size(x)
         Φ = zeros(k, m)
-        for i=1:m
-            Φ[:,i] = ψ(x[:,i])
+        for i = 1:m
+            Φ[:, i] = ψ(x[:, i])
         end
-        return a'*Φ
+        return a' * Φ   # n×m
     end
-
     return estimator
 end
 
-num_features = 1200
-ρ = 1.0
-λ = 1e-7
-params = (num_features, ρ, λ)
-Φ, W, b = feature_matrix(X, params)
-a = tikhonov_regularization(Φ, Y, params)
-estimator = construct_estimator(a, W, b)
+function rff_estimator(X::Matrix{T}, Y::Matrix{T},
+                       num_features::Int;
+                       ρ::T = one(T),
+                       λ::T = T(1e-7)) where {T}
+    params = (num_features, ρ, λ)        # (K, rho, lambda)
+    Φ, W, b = rff_feature_matrix(X, params)
+    a = tikhonov_regularization(Φ, Y, params)
+    return construct_rff_estimator(a, W, b)
+end
 
-y_pred = estimator(X)
-Y
 
-figure = plot(Y[:], Y[:], ms=0.1)
-scatter!(Y[:], y_pred[:], ms=0.1)
+begin
+    d::Int = 10
+    n::Int = 3
+    M::Int = 10_00
+    X = randn(d, M)
+    Y = randn(n, M)
+
+    estimator = rff_estimator(X, Y, 1200)
+    y_pred = estimator(X)
+    Y
+    figure = plot(Y[:], Y[:], ms=0.1)
+    scatter!(Y[:], y_pred[:], ms=0.1)
+end
