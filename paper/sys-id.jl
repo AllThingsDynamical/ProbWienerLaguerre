@@ -16,7 +16,7 @@ end
 begin
     k = 5
     p = 15
-    λ = 20.0
+    λ = 30.0
 
     M1 = size(U_train, 2)
     resolution1 = 2*M1
@@ -50,17 +50,19 @@ begin
     idx_shift = 1
     X = wl_features[:, idx_shift:end]
     Y = output_features[:, idx_shift:end]
-    estimator = rff_estimator(X, Y, 200, λ=1e-1)
+    estimator = bayesian_rff_estimator(X, Y, 1000, σ2=8e-1)
 
-    mu_y_pred = estimator(X)
-    k = 1
+    mu_y_pred, var_y_pred = estimator(X)
+    k = -1
     W = hcat(X[:,end-k:end], wl_features_t)
-    mu_y_test = estimator(W)
+    mu_y_test, var_y_test = estimator(W)
 
     idxk = resolution1-k:resolution1 + resolution2
     figure3 = plot(idx_shift:idx1[end], mu_y_pred', label="Reconstructed",
-                    ylims=[-0.48, 0.48])
-    plot!(idxk, mu_y_test', label="Test Output", title="Prediction", xlabel="#Iter") 
+                    ylims=[-0.48, 0.48], ribbon=var_y_pred[:])
+    plot!(idxk, mu_y_test', label="Test Output", title="Prediction", xlabel="#Iter",
+            ribbon=var_y_test) 
 
-    plot(figure0, figure1, figure2, figure3, size=(1200, 600))
+    plot(figure0, figure2, figure3, layout=(4,1), size=(800, 1500))
+    savefig("paper/sys-id.png")
 end

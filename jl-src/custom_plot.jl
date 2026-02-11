@@ -20,8 +20,10 @@ default(
     foreground_color_text = :black,
     background_color = :white,
     size = (720, 480),
-    dpi = 300,
-    margin = 7.5mm
+    dpi = 500,
+    margin = 7.5mm,
+    fillalpha = 10.0,
+    fillcolor = :blue,
 )
 
 # Consistent color cycle (colorblind-safe, print-friendly)
