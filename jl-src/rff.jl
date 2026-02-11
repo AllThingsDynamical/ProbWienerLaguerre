@@ -53,7 +53,7 @@ end
 function rff_estimator(X::Matrix{T}, Y::Matrix{T},
                        num_features::Int;
                        ρ::T = one(T),
-                       λ::T = T(1e-7)) where {T}
+                       λ::T = T(1e-3)) where {T}
     params = (num_features, ρ, λ)        # (K, rho, lambda)
     Φ, W, b = rff_feature_matrix(X, params)
     a = tikhonov_regularization(Φ, Y, params)
@@ -64,7 +64,7 @@ function bayesian_rff_estimator(X::Matrix{T}, Y::Matrix{T},
                                 num_features::Int = 1200;
                                 ρ::T = one(T),
                                 α::T = one(T),
-                                σ2::T = T(1e-3)) where {T}
+                                σ2::T = T(1e-1)) where {T}
 
     params = (num_features, ρ, zero(T))
     Φ, W, b = rff_feature_matrix(X, params)
