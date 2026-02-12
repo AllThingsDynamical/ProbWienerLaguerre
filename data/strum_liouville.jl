@@ -53,7 +53,7 @@ end
 function simulate_second_order(; a=0.8, b=4.0, c=1.2,
                                T=50.0, dt=0.01,
                                y0=0.0, v0=0.0,
-                               seed=0, noise_std=0.1)
+                               seed=0, noise_std=0.02)
     u = make_input(; seed=seed)
     rng = MersenneTwister(seed)
 
