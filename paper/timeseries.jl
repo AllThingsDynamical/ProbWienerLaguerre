@@ -41,7 +41,8 @@ begin
     y_recon = y_pred[:,1:n]
     y_future = y_pred[:, n+1:end]
     figure1 = plot(1:n, y_recon[1,:], xlabel="# Iter", ribbon=var_y_pred, label="Reconstruct x")
-    plot!(1:n, y_recon[2,:], label="Reconstruct v", ribbon=var_y_pred, title="Prediction")
+    plot!(1:n, y_recon[2,:], label="Reconstruct v", ribbon=var_y_pred, title="Prediction",    fillalpha = 10.0,
+    fillcolor = :blue,)
     plot!(n+1:m, y_future[1,:], label=false)
     plot!(n+1:m, y_future[2,:], label=false, legend=:bottomleft)
 end
@@ -52,6 +53,6 @@ begin
 
     figure3 = plot(wl_features', label=false, title="WL features", xlabel="# Iter")
 
-    plot(figure2, figure3, figure1, layout=(3,1), size=(800, 1200))
+    plot(figure2, figure1, layout=(3,1), size=(800, 1200))
     savefig("paper/timeseries.png")
 end
