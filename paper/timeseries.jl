@@ -40,19 +40,34 @@ begin
     n = size(W,2) - 1000
     y_recon = y_pred[:,1:n]
     y_future = y_pred[:, n+1:end]
-    figure1 = plot(1:n, y_recon[1,:], xlabel="# Iter", ribbon=var_y_pred, label="Reconstruct x")
-    plot!(1:n, y_recon[2,:], label="Reconstruct v", ribbon=var_y_pred, title="Prediction",    fillalpha = 10.0,
+    figure1 = plot(1:n, y_recon[1,:], xlabel="Time index", ribbon=var_y_pred, label="Reconstructed x")
+    plot!(1:n, y_recon[2,:], label="Reconstructed v", ribbon=var_y_pred, title="Model Prediction",    fillalpha = 10.0,
     fillcolor = :blue,)
     plot!(n+1:m, y_future[1,:], label=false)
     plot!(n+1:m, y_future[2,:], label=false, legend=:bottomleft)
 end
 
 begin
-    figure2 = plot(2*(1:size(W,2)), W[1,1:end], xlabel="# Iter", label="x")
-    plot!(2*(1:size(W,2)), W[2,:], label="v", title="Reference", legend=:bottomleft)
+    figure2 = plot(2*(1:size(W,2)), W[1,1:end], xlabel="Time index", label="x")
+    plot!(2*(1:size(W,2)), W[2,:], label="v", title="Observed timeseries", legend=:bottomleft)
+    vline!([n], color=:red, linewidth=3, label="Training threshold")
 
-    figure3 = plot(wl_features', label=false, title="WL features", xlabel="# Iter")
+    figure3 = plot(wl_features', label=false, title="WL features", xlabel="Time index")
 
     plot(figure2, figure1, layout=(3,1), size=(800, 1200))
     savefig("paper/timeseries.png")
 end
+
+savefig(figure2, "paper/ts-1.png")
+savefig(figure1, "paper/ts-2.png")
+
+
+
+err = y_pred[:,1:2:end-2] .- W[:,2:end]
+metric = sqrt(mean(err.^2))
+
+
+plot(y_pred[1,1:2:end])
+plot!(W[1,2:end])
+plot(y_pred[2,1:2:end])
+plot!(W[2,2:end]

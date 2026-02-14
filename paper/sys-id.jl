@@ -36,14 +36,14 @@ begin
     idx1 = 1:resolution1
     idx2 = resolution1+1:resolution1+resolution2
 
-    figure0 = plot(idx1, input_features, label="Train Input")
-    plot!(idx2, input_features_t, label="Test Input", xlabel="#Iter")
+    figure0 = plot(idx1, input_features, label="Train", title="Input signal")
+    plot!(idx2, input_features_t, label="Test", xlabel="Time index")
 
     figure1 = plot(idx1, wl_features', label=false, title="WL features")
-    plot!(idx2, wl_features_t', label=false, xlabel="#Iter")
+    plot!(idx2, wl_features_t', label=false, xlabel="Time index")
 
-    figure2 = plot(idx1, output_features', label="Train Output")
-    plot!(idx2, output_features_t', label="Test Output", title="Reference", xlabel="#Iter") 
+    figure2 = plot(idx1, output_features', label="Train")
+    plot!(idx2, output_features_t', label="Test", title="True Output signal", xlabel="Time index") 
 end
 
 begin
@@ -60,9 +60,20 @@ begin
     idxk = resolution1-k:resolution1 + resolution2
     figure3 = plot(idx_shift:idx1[end], mu_y_pred', label="Reconstructed",
                     ylims=[-0.48, 0.48], ribbon=var_y_pred[:])
-    plot!(idxk, mu_y_test', label="Test Output", title="Prediction", xlabel="#Iter",
+    plot!(idxk, mu_y_test', label="Test", title="Model Prediction", xlabel="Time index",
             ribbon=var_y_test) 
 
     plot(figure0, figure2, figure3, layout=(4,1), size=(800, 1500))
     savefig("paper/sys-id.png")
 end
+
+savefig(figure0, "paper/sys-id-1.png")
+savefig(figure2, "paper/sys-id-2.png")
+savefig(figure3, "paper/sys-id-3.png")
+
+using Statistics
+rmse = x -> sqrt(mean(x[:].^2))
+err = mu_y_test[:,1:2:end] .- Y_test
+metric = rmse(err)
+
+mean(var_y_test[1:2:end])
