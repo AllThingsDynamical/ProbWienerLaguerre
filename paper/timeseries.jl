@@ -70,4 +70,4 @@ metric = sqrt(mean(err.^2))
 plot(y_pred[1,1:2:end])
 plot!(W[1,2:end])
 plot(y_pred[2,1:2:end])
-plot!(W[2,2:end]
+plot!(W[2,2:end])
